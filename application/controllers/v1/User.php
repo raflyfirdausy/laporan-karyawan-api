@@ -51,6 +51,7 @@ class User extends REST_Controller
         }
     }
 
+    //TODO : CONVERT BASE64 TO IMAGE $foto_user
     public function update_data_post()
     {
         $data                   = json_decode(file_get_contents("php://input"));

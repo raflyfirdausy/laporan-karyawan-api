@@ -85,6 +85,7 @@ class Laporanharian extends REST_Controller
     }
 
     //TODO : CONVERT BASE64 TO IMAGE $bukti_laporanharian
+    //TODO : USER UDAH PERNAH LAPORAN BELUM PADA HARI INI DAN OUTLET TSB
     public function add_post()
     {
         $data                       = json_decode(file_get_contents("php://input"));
@@ -187,5 +188,5 @@ class Laporanharian extends REST_Controller
         }
     }
 
-    
+
 }

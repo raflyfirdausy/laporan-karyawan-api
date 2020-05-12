@@ -14,6 +14,7 @@ class Auth extends REST_Controller
         $this->load->model("User_model", "user");
     }
 
+    //TODO : CONVERT BASE64 TO IMAGE $foto_user
     public function register_post()
     {
         $data                   = json_decode(file_get_contents("php://input"));

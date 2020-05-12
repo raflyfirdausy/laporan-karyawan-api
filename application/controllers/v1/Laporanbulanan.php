@@ -7,7 +7,6 @@ use Restserver\Libraries\REST_Controller;
 
 class Laporanbulanan extends REST_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
