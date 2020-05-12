@@ -14,7 +14,7 @@ class User extends REST_Controller
         $this->load->model("User_model", "user");
     }
 
-    public function index_post()
+    public function data_post()
     {
         $data       = json_decode(file_get_contents("php://input"));
         $id_user    = set($data->id_user);
@@ -51,7 +51,7 @@ class User extends REST_Controller
         }
     }
 
-    public function update_post()
+    public function update_data_post()
     {
         $data                   = json_decode(file_get_contents("php://input"));
         $id_user                = set($data->id_user);
@@ -64,7 +64,7 @@ class User extends REST_Controller
                 "status"                => true,
                 "response_code"         => REST_Controller::HTTP_BAD_REQUEST,
                 "response_message"      => "Bad Request!",
-                "data"                  => $data
+                "data"                  => null
             ), REST_Controller::HTTP_OK);
         }
 
@@ -97,7 +97,7 @@ class User extends REST_Controller
             return $this->response(array(
                 "status"                => true,
                 "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
-                "response_message"      => "User berhasil diupdate",
+                "response_message"      => "User tidak ditemukan",
                 "data"                  => null
             ), REST_Controller::HTTP_OK);
         }
@@ -115,7 +115,7 @@ class User extends REST_Controller
                 "status"                => true,
                 "response_code"         => REST_Controller::HTTP_BAD_REQUEST,
                 "response_message"      => "Bad Request!",
-                "data"                  => $data
+                "data"                  => null
             ), REST_Controller::HTTP_OK);
         }
 
@@ -148,6 +148,48 @@ class User extends REST_Controller
                 "status"                => true,
                 "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
                 "response_message"      => "Password lama yang anda masukan salah",
+                "data"                  => null
+            ), REST_Controller::HTTP_OK);
+        }
+    }
+
+    public function delete_post()
+    {
+        $data                   = json_decode(file_get_contents("php://input"));
+        $id_user                = set($data->id_user);
+
+        if (empty($id_user)) {
+            return $this->response(array(
+                "status"                => true,
+                "response_code"         => REST_Controller::HTTP_BAD_REQUEST,
+                "response_message"      => "Bad Request!",
+                "data"                  => null
+            ), REST_Controller::HTTP_OK);
+        }
+
+        $cekUser = $this->user->get($id_user);
+        if ($cekUser) {
+            $delete = $this->user->delete($cekUser["id_user"]);
+            if ($delete) {
+                return $this->response(array(
+                    "status"                => true,
+                    "response_code"         => REST_Controller::HTTP_OK,
+                    "response_message"      => "User berhasil di hapus",
+                    "data"                  => null
+                ), REST_Controller::HTTP_OK);
+            } else {
+                return $this->response(array(
+                    "status"                => true,
+                    "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
+                    "response_message"      => "User gagal di hapus : " . db_error(),
+                    "data"                  => null
+                ), REST_Controller::HTTP_OK);
+            }
+        } else {
+            return $this->response(array(
+                "status"                => true,
+                "response_code"         => REST_Controller::HTTP_PRECONDITION_FAILED,
+                "response_message"      => "User tidak ditemukan!",
                 "data"                  => null
             ), REST_Controller::HTTP_OK);
         }
