@@ -65,7 +65,7 @@ class Auth extends REST_Controller
             return $this->response(array(
                 "status"                => true,
                 "response_code"         => REST_Controller::HTTP_BAD_REQUEST,
-                "response_message"      => "Bad Request Goblok!",
+                "response_message"      => "Bad Request!",
                 "data"                  => null
             ), REST_Controller::HTTP_OK);
         }
