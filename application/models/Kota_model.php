@@ -1,9 +1,9 @@
 <?php
 
-class User_model extends Custom_model
+class Kota_model extends Custom_model
 {
-    public $table           = 'user';
-    public $primary_key     = 'id_user';
+    public $table           = 'kota';
+    public $primary_key     = 'id_kota';
     public $soft_deletes    = TRUE;
     public $timestamps      = TRUE;
     public $return_as       = "array";

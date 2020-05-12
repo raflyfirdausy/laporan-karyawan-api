@@ -71,7 +71,7 @@ if (!function_exists('sc')) {
 if (!function_exists("set")) {
     function set(&$string)
     {
-        return isset($string) ? $string : FALSE;
+        return isset($string) ? $string : NULL;
     }
 }
 
@@ -91,6 +91,13 @@ if (!function_exists('insert_tanggal')) {
     {
         $newDate = date("Y-m-d", strtotime($tanggal));
         return $newDate;
+    }
+}
+
+if (!function_exists('alphanum')) {
+    function alphanum($string = "")
+    {
+        return preg_replace("/[^a-zA-Z0-9]+/", "", remove_duplicate_space($string));
     }
 }
 
@@ -118,6 +125,13 @@ if (!function_exists("dash")) {
 if(!function_exists("slug")){
     function slug($string = ""){
         return strtolower(dash(remove_duplicate_space(alphanumspace($string))));
+    }
+}
+
+if(!function_exists("db_error")){
+    function db_error(){
+        $CI = &get_instance();
+        return $CI->db->error()["message"];
     }
 }
 
