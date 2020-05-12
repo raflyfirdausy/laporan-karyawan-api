@@ -22,17 +22,22 @@ class Laporanharian extends REST_Controller
         $id_outlet              = set($data->id_outlet);
         $tahun_laporanharian    = set($data->tahun_laporanharian);
         $bulan_laporanharian    = set($data->bulan_laporanharian);
+        $status_laporanharian   = set($data->status_laporanharian);
 
         if (!empty($id_laporanharian)) {
             $kondisi = [
-                "id_laporanharian"  => $id_laporanharian
+                "id_laporanharian"      => $id_laporanharian
+            ];
+        } else if (!empty($status_laporanharian)) {
+            $kondisi = [
+                "status_laporanharian"  => $status_laporanharian
             ];
         } else {
             if (empty($bulan_laporanharian) || empty($tahun_laporanharian)) {
                 return $this->response(array(
                     "status"                => true,
                     "response_code"         => REST_Controller::HTTP_BAD_REQUEST,
-                    "response_message"      => "Bad Request!",
+                    "response_message"      => "Bad Request! " . $status_laporanharian,
                     "data"                  => null
                 ), REST_Controller::HTTP_OK);
             } else {
@@ -108,23 +113,39 @@ class Laporanharian extends REST_Controller
             "status_laporanharian"      => LAPORAN_BELUM
         ];
 
-        $insert = $this->harian->insert($dataInsert);
-        if ($insert) {
-            $dataInsert = $this->harian
-                ->with_user()
-                ->with_outlet(["with"  => ["relation"  => "kota"]])
-                ->get($insert);
-            return $this->response(array(
-                "status"                => true,
-                "response_code"         => REST_Controller::HTTP_OK,
-                "response_message"      => "Laporan harian berhasil ditambahkan",
-                "data"                  => $dataInsert
-            ), REST_Controller::HTTP_OK);
+        $cekInsert = $this->harian->where([
+            "id_user"           => $id_user,
+            "id_outlet"         => $id_outlet,
+            "YEAR(created_at)"  => date("Y"),
+            "MONTH(created_at)" => date("n")
+        ])->get();
+
+        if (!$cekInsert) {
+            $insert = $this->harian->insert($dataInsert);
+            if ($insert) {
+                $dataInsert = $this->harian
+                    ->with_user()
+                    ->with_outlet(["with"  => ["relation"  => "kota"]])
+                    ->get($insert);
+                return $this->response(array(
+                    "status"                => true,
+                    "response_code"         => REST_Controller::HTTP_OK,
+                    "response_message"      => "Laporan harian berhasil ditambahkan",
+                    "data"                  => $dataInsert
+                ), REST_Controller::HTTP_OK);
+            } else {
+                return $this->response(array(
+                    "status"                => true,
+                    "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
+                    "response_message"      => "Laporan harian gagal ditambahkan : " . db_error(),
+                    "data"                  => null
+                ), REST_Controller::HTTP_OK);
+            }
         } else {
             return $this->response(array(
                 "status"                => true,
-                "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
-                "response_message"      => "Laporan harian gagal ditambahkan : " . db_error(),
+                "response_code"         => REST_Controller::HTTP_PRECONDITION_FAILED,
+                "response_message"      => "Anda sudah melakukan laporan pada outlet tersebut pada hari ini",
                 "data"                  => null
             ), REST_Controller::HTTP_OK);
         }
@@ -188,5 +209,5 @@ class Laporanharian extends REST_Controller
         }
     }
 
-
+    
 }

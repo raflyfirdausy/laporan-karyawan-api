@@ -9,6 +9,6 @@ defined('LEVEL_KARYAWAN')       or define('LEVEL_KARYAWAN', 1);
 defined('LEVEL_ADMIN')          or define('LEVEL_ADMIN', 2);
 
 //? FOR LAPORAN
-defined('LAPORAN_BELUM')        or define('LAPORAN_BELUM', 0);
-defined('LAPORAN_DITERIMA')     or define('LAPORAN_DITERIMA', 1);
-defined('LAPORAN_DITOLAK')      or define('LAPORAN_DITOLAK', 2);
+defined('LAPORAN_BELUM')        or define('LAPORAN_BELUM', 1);
+defined('LAPORAN_DITERIMA')     or define('LAPORAN_DITERIMA', 2);
+defined('LAPORAN_DITOLAK')      or define('LAPORAN_DITOLAK', 3);
