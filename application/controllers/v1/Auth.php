@@ -5,6 +5,8 @@ require APPPATH . '/libraries/REST_Controller.php';
 
 use Restserver\Libraries\REST_Controller;
 
+use function PHPSTORM_META\type;
+
 class Auth extends REST_Controller
 {
 
@@ -25,6 +27,14 @@ class Auth extends REST_Controller
         $foto_user              = set($data->foto_user);
         $level_user             = $data->level_user;
 
+        if (!empty($foto_user)) {            
+            $image  = base64_decode($foto_user);
+            $foto_user = now() . ".jpg";
+            file_put_contents("assets/foto/" . $foto_user, $image);
+        } else {
+            $foto_user = null;
+        }
+
         $dataInsert = [
             "nip_user"          => $nip_user,
             "username_user"     => $username_user,
@@ -33,6 +43,8 @@ class Auth extends REST_Controller
             "foto_user"         => $foto_user,
             "level_user"        => $level_user
         ];
+
+
 
         $insert     = $this->user->insert($dataInsert);
         if ($insert) {

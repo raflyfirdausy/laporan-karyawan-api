@@ -60,6 +60,14 @@ class User extends REST_Controller
         $nama_user              = set($data->nama_user);
         $foto_user              = set($data->foto_user);
 
+        if (!empty($foto_user)) {            
+            $image  = base64_decode($foto_user);
+            $foto_user = now() . ".jpg";
+            file_put_contents("assets/foto/" . $foto_user, $image);
+        } else {
+            $foto_user = null;
+        }
+
         if (empty($id_user)) {
             return $this->response(array(
                 "status"                => true,
