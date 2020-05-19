@@ -61,7 +61,7 @@ class Dashboard extends REST_Controller
     public function data_karyawan_post()
     {
         $data       = json_decode(file_get_contents("php://input"));
-        $id_user    = $data->id_user;
+        $id_user    = set($data->id_user);
 
         if (!empty($id_user)) {
             $lapHarian = $this->harian
