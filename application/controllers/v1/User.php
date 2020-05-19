@@ -79,11 +79,19 @@ class User extends REST_Controller
 
         $cekUser = $this->user->get($id_user);
         if ($cekUser) {
-            $dataUpdate = [
-                "nip_user"          => $nip_user,
-                "nama_user"         => $nama_user,
-                "foto_user"         => $foto_user
-            ];
+            if(!empty($foto_user)){
+                $dataUpdate = [
+                    "nip_user"          => $nip_user,
+                    "nama_user"         => $nama_user,
+                    "foto_user"         => $foto_user
+                ];
+            } else {
+                $dataUpdate = [
+                    "nip_user"          => $nip_user,
+                    "nama_user"         => $nama_user
+                ];
+            }
+            
             $update = $this->user->where(["id_user" => $id_user])->update($dataUpdate);
             if ($update) {
                 $dataUser = $this->user->get($cekUser["id_user"]);
