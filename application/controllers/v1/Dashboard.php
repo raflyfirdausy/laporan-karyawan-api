@@ -57,4 +57,43 @@ class Dashboard extends REST_Controller
             ]
         ), REST_Controller::HTTP_OK);
     }
+
+    public function data_karyawan_post()
+    {
+        $data       = json_decode(file_get_contents("php://input"));
+        $id_user    = $data->id_user;
+
+        if (!empty($id_user)) {
+            $lapHarian = $this->harian
+                ->where([
+                    "id_user"           => $id_user,
+                    "YEAR(created_at)"  => date("Y"),
+                    "MONTH(created_at)" => date("n")
+                ])->count_rows();
+
+            $lapBulanan = $this->bulanan
+                ->where([
+                    "id_user"           => $id_user,
+                    "YEAR(created_at)"  => date("Y"),
+                    "MONTH(created_at)" => date("n")
+                ])->count_rows();
+
+            return $this->response(array(
+                "status"                => true,
+                "response_code"         => REST_Controller::HTTP_OK,
+                "response_message"      => "Data ditemukan",
+                "data"                  => [
+                    "lap_harian"        => $lapHarian,
+                    "lap_bulanan"       => $lapBulanan
+                ]
+            ), REST_Controller::HTTP_OK);
+        } else {
+            return $this->response(array(
+                "status"                => true,
+                "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
+                "response_message"      => "ID user tidak diketahui",
+                "data"                  => null
+            ), REST_Controller::HTTP_OK);
+        }
+    }
 }
