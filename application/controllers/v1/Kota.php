@@ -22,7 +22,10 @@ class Kota extends REST_Controller
         if (empty($id_kota)) {
             $kota = $this->kota->get_all();
         } else {
-            $kota = $this->kota->where(["id_kota" => $id_kota])->get_all();
+            $kota = $this->kota
+                ->where(["id_kota" => $id_kota])
+                ->order_by("nama_kota", "ASC")
+                ->get_all();
         }
 
         if ($kota) {
