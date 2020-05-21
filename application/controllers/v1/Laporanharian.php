@@ -102,6 +102,14 @@ class Laporanharian extends REST_Controller
         $keterangan_laporanharian   = set($data->keterangan_laporanharian);
         $bukti_laporanharian        = set($data->bukti_laporanharian);
 
+        if (!empty($bukti_laporanharian)) {            
+            $image  = base64_decode($bukti_laporanharian);
+            $bukti_laporanharian = now() . ".jpg";
+            file_put_contents("assets/laporan/" . $bukti_laporanharian, $image);
+        } else {
+            $bukti_laporanharian = null;
+        }
+
         $dataInsert = [
             "id_user"                   => $id_user,
             "id_outlet"                 => $id_outlet,
