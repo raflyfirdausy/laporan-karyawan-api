@@ -12,6 +12,7 @@ class Outlet extends REST_Controller
     {
         parent::__construct();
         $this->load->model("Outlet_model", "outlet");
+        $this->load->model("Kota_model", "kota");
     }
 
     public function data_post()
@@ -33,6 +34,12 @@ class Outlet extends REST_Controller
             ->get_all();
 
         if ($outlet) {
+            for ($i = 0; $i < sizeof($outlet); $i++) {
+                if (empty($outlet[$i]["kota"])) {
+                    $outlet[$i]["kota"] = $this->kota->with_trashed()->get($outlet[$i]["id_kota"]);
+                }
+            }
+
             return $this->response(array(
                 "status"                => true,
                 "response_code"         => REST_Controller::HTTP_OK,

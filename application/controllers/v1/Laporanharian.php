@@ -12,6 +12,9 @@ class Laporanharian extends REST_Controller
     {
         parent::__construct();
         $this->load->model("Laporanharian_model", "harian");
+        $this->load->model("User_model", "user");
+        $this->load->model("Outlet_model", "outlet");
+        $this->load->model("Kota_model", "kota");
     }
 
     public function data_post()
@@ -70,6 +73,25 @@ class Laporanharian extends REST_Controller
 
         if ($laporanharian) {
             for ($a = 0; $a < sizeof($laporanharian); $a++) {
+                
+                if (empty($laporanharian[$a]["outlet"])) {
+                    $laporanharian[$a]["outlet"] = $this->outlet
+                        ->with_kota()
+                        ->with_trashed()
+                        ->get($laporanharian[$a]["id_outlet"]);
+                } 
+
+                if (empty($laporanharian[$a]["outlet"]["kota"])) {
+                    $laporanharian[$a]["outlet"]["kota"] = $this->kota
+                        ->with_trashed()
+                        ->get($laporanharian[$a]["outlet"]["id_kota"]);
+                }
+
+                if (empty($laporanharian[$a]["user"])) {
+                    $laporanharian[$a]["user"] = $this->user->with_trashed()->get($laporanharian[$a]["id_user"]);
+                }
+
+
                 $laporanharian[$a]["bukti_laporanharian"]   = asset("laporan/" . $laporanharian[$a]["bukti_laporanharian"]);
                 $laporanharian[$a]["user"]["foto_user"]     = asset("foto/" . $laporanharian[$a]["user"]["foto_user"]);
             }
@@ -102,7 +124,7 @@ class Laporanharian extends REST_Controller
         $keterangan_laporanharian   = set($data->keterangan_laporanharian);
         $bukti_laporanharian        = set($data->bukti_laporanharian);
 
-        if (!empty($bukti_laporanharian)) {            
+        if (!empty($bukti_laporanharian)) {
             $image  = base64_decode($bukti_laporanharian);
             $bukti_laporanharian = now() . ".jpg";
             file_put_contents("assets/laporan/" . $bukti_laporanharian, $image);
@@ -216,6 +238,4 @@ class Laporanharian extends REST_Controller
             ), REST_Controller::HTTP_OK);
         }
     }
-
-
 }

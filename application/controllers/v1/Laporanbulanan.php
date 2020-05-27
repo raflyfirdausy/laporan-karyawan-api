@@ -11,6 +11,7 @@ class Laporanbulanan extends REST_Controller
     {
         parent::__construct();
         $this->load->model("Laporanbulanan_model", "bulanan");
+        $this->load->model("User_model", "user");
     }
 
     public function data_post()
@@ -61,6 +62,9 @@ class Laporanbulanan extends REST_Controller
 
         if ($laporanBulanan) {
             for ($a = 0; $a < sizeof($laporanBulanan); $a++) {
+                if (empty($laporanBulanan[$a]["user"])) {
+                    $laporanBulanan[$a]["user"] = $this->user->with_trashed()->get($laporanBulanan[$a]["id_user"]);
+                }
                 $laporanBulanan[$a]["user"]["foto_user"]     = asset("foto/" . $laporanBulanan[$a]["user"]["foto_user"]);
             }
             return $this->response(array(

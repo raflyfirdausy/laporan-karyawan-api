@@ -15,7 +15,7 @@ class Laporanharian_model extends Custom_model
             'foreign_model'     => 'User_model',
             'foreign_table'     => 'user',
             'foreign_key'       => 'id_user',
-            'local_key'         => 'id_user'
+            'local_key'         => 'id_user',            
         );
         $this->has_one['outlet'] = array(
             'foreign_model'     => 'Outlet_model',
