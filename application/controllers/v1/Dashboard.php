@@ -34,9 +34,14 @@ class Dashboard extends REST_Controller
                 "MONTH(created_at)" => date("n")
             ])->count_rows();
 
-        $lapMasuk = $this->harian
+        $lapMasukHarian = $this->harian
             ->where([
                 "status_laporanharian" => LAPORAN_BELUM
+            ])->count_rows();
+
+        $lapMasukBulanan = $this->bulanan
+            ->where([
+                "status_laporanbulanan" => LAPORAN_BELUM
             ])->count_rows();
 
         return $this->response(array(
@@ -44,10 +49,11 @@ class Dashboard extends REST_Controller
             "response_code"         => REST_Controller::HTTP_OK,
             "response_message"      => "Data ditemukan",
             "data"                  => [
-                "pegawai"       => $pegawai,
-                "lap_harian"    => $lapHarian,
-                "lap_bulanan"   => $lapBulanan,
-                "lap_masuk"     => $lapMasuk
+                "pegawai"           => $pegawai,
+                "lap_harian"        => $lapHarian,
+                "lap_bulanan"       => $lapBulanan,
+                "lap_masuk_harian"  => $lapMasukHarian,
+                "lap_masuk_bulanan" => $lapMasukBulanan,
             ]
         ), REST_Controller::HTTP_OK);
     }
