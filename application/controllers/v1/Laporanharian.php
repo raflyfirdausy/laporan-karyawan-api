@@ -187,7 +187,7 @@ class Laporanharian extends REST_Controller
                     return $this->response(array(
                         "status"                => true,
                         "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
-                        "response_message"      => "Kota gagal diupdate : " . db_error(),
+                        "response_message"      => "Laporan harian gagal diupdate : " . db_error(),
                         "data"                  => null
                     ), REST_Controller::HTTP_OK);
                 }
@@ -209,5 +209,5 @@ class Laporanharian extends REST_Controller
         }
     }
 
-    
+
 }
