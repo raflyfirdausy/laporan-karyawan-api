@@ -27,7 +27,7 @@ class Auth extends REST_Controller
         $foto_user              = set($data->foto_user);
         $level_user             = $data->level_user;
 
-        if (!empty($foto_user)) {            
+        if (!empty($foto_user)) {
             $image  = base64_decode($foto_user);
             $foto_user = now() . ".jpg";
             file_put_contents("assets/foto/" . $foto_user, $image);
@@ -83,8 +83,11 @@ class Auth extends REST_Controller
             ), REST_Controller::HTTP_OK);
         }
 
-        $login  = $this->user->where("nip_user", $username_nip)
+        $login  = $this->user
+            ->group_start()
+            ->where("nip_user", "=" , $username_nip, FALSE)
             ->where("username_user", "=", $username_nip, TRUE)
+            ->group_end()
             ->where("password_user", $password_user)
             ->get();
 
