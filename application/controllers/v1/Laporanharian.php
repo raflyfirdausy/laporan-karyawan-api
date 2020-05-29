@@ -73,13 +73,13 @@ class Laporanharian extends REST_Controller
 
         if ($laporanharian) {
             for ($a = 0; $a < sizeof($laporanharian); $a++) {
-                
+
                 if (empty($laporanharian[$a]["outlet"])) {
                     $laporanharian[$a]["outlet"] = $this->outlet
                         ->with_kota()
                         ->with_trashed()
                         ->get($laporanharian[$a]["id_outlet"]);
-                } 
+                }
 
                 if (empty($laporanharian[$a]["outlet"]["kota"])) {
                     $laporanharian[$a]["outlet"]["kota"] = $this->kota
@@ -226,6 +226,94 @@ class Laporanharian extends REST_Controller
                     "status"                => true,
                     "response_code"         => REST_Controller::HTTP_PRECONDITION_FAILED,
                     "response_message"      => "Proses ditolak! status laporan tidak diketahui",
+                    "data"                  => null
+                ), REST_Controller::HTTP_OK);
+            }
+        } else {
+            return $this->response(array(
+                "status"                => true,
+                "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
+                "response_message"      => "Laporan harian tidak ditemukan",
+                "data"                  => null
+            ), REST_Controller::HTTP_OK);
+        }
+    }
+
+    public function update_post()
+    {
+        $data                       = json_decode(file_get_contents("php://input"));
+        $id_laporanharian           = set($data->id_laporanharian);
+        $id_outlet                  = set($data->id_outlet);
+        $alamat_laporanharian       = set($data->alamat_laporanharian);
+        $latitude_laporanharian     = set($data->latitude_laporanharian);
+        $longitude_laporanharian    = set($data->longitude_laporanharian);
+        $keterangan_laporanharian   = set($data->keterangan_laporanharian);
+        $bukti_laporanharian        = set($data->bukti_laporanharian);
+
+        if (empty($id_laporanharian)) {
+            return $this->response(array(
+                "status"                => true,
+                "response_code"         => REST_Controller::HTTP_BAD_REQUEST,
+                "response_message"      => "Bad Request! : id laporan tidak deketahui",
+                "data"                  => $data
+            ), REST_Controller::HTTP_OK);
+        }
+
+        $cekLaporan = $this->harian->as_object()->get($id_laporanharian);
+        if ($cekLaporan) {
+            if ($cekLaporan->status_laporanharian == LAPORAN_BELUM) {
+                if (!empty($bukti_laporanharian)) {
+                    $image  = base64_decode($bukti_laporanharian);
+                    $bukti_laporanharian = now() . ".jpg";
+                    file_put_contents("assets/laporan/" . $bukti_laporanharian, $image);
+
+                    if (!empty($cekLaporan->bukti_laporanharian)) {
+                        unlink("assets/laporan/" . $cekLaporan->bukti_laporanharian);
+                    }
+
+                    $dataUpdate = [
+                        "id_outlet"                 => $id_outlet,
+                        "alamat_laporanharian"      => $alamat_laporanharian,
+                        "latitude_laporanharian"    => $latitude_laporanharian,
+                        "longitude_laporanharian"   => $longitude_laporanharian,
+                        "keterangan_laporanharian"  => $keterangan_laporanharian,
+                        "bukti_laporanharian"       => $bukti_laporanharian
+                    ];
+                } else {
+                    $dataUpdate = [
+                        "id_outlet"                 => $id_outlet,
+                        "alamat_laporanharian"      => $alamat_laporanharian,
+                        "latitude_laporanharian"    => $latitude_laporanharian,
+                        "longitude_laporanharian"   => $longitude_laporanharian,
+                        "keterangan_laporanharian"  => $keterangan_laporanharian
+                    ];
+                }
+
+                $update = $this->harian->where($cekLaporan->id_laporanharian)->update($dataUpdate);
+                if ($update) {
+                    $dataUpdate = $this->harian
+                        ->with_user()
+                        ->with_outlet(["with"  => ["relation"  => "kota"]])
+                        ->get($cekLaporan->id_laporanharian);
+                    return $this->response(array(
+                        "status"                => true,
+                        "response_code"         => REST_Controller::HTTP_OK,
+                        "response_message"      => "Laporan harian berhasil diubah",
+                        "data"                  => $dataUpdate
+                    ), REST_Controller::HTTP_OK);
+                } else {
+                    return $this->response(array(
+                        "status"                => true,
+                        "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
+                        "response_message"      => "Laporan harian gagal di edit!",
+                        "data"                  => null
+                    ), REST_Controller::HTTP_OK);
+                }
+            } else {
+                return $this->response(array(
+                    "status"                => true,
+                    "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
+                    "response_message"      => "Laporan harian tidak dapat di edit",
                     "data"                  => null
                 ), REST_Controller::HTTP_OK);
             }

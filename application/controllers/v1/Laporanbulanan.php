@@ -97,7 +97,7 @@ class Laporanbulanan extends REST_Controller
 
         if (date("d") >= 28) { //? INSERT HANYA BISA TANGGAL 28 - 31
             $cekInsert = $this->bulanan->where([
-                "id_user"           => $id_user,                
+                "id_user"           => $id_user,
                 "YEAR(created_at)"  => date("Y"),
                 "MONTH(created_at)" => date("n")
             ])->get();
@@ -105,7 +105,7 @@ class Laporanbulanan extends REST_Controller
                 $insert = $this->bulanan->insert($dataInsert);
                 if ($insert) {
                     $dataInsert = $this->bulanan
-                        ->with_user()                        
+                        ->with_user()
                         ->get($insert);
                     return $this->response(array(
                         "status"                => true,
@@ -196,5 +196,59 @@ class Laporanbulanan extends REST_Controller
         }
     }
 
+    public function update_post()
+    {
+        $data                       = json_decode(file_get_contents("php://input"));
+        $id_laporanbulanan          = set($data->id_laporanbulanan);
+        $isi_laporanbulanan         = set($data->isi_laporanbulanan);
 
+        if (empty($id_laporanbulanan) || empty($isi_laporanbulanan)) {
+            return $this->response(array(
+                "status"                => true,
+                "response_code"         => REST_Controller::HTTP_BAD_REQUEST,
+                "response_message"      => "Bad Request!",
+                "data"                  => $data
+            ), REST_Controller::HTTP_OK);
+        }
+
+        $cekLaporan = $this->bulanan->as_object()->get($id_laporanbulanan);
+        if ($cekLaporan) {
+            if ($cekLaporan->status_laporanbulanan == LAPORAN_BELUM) {
+                $dataUpdate = ["isi_laporanbulanan" => $isi_laporanbulanan];
+                $update = $this->bulanan->where($cekLaporan->id_laporanbulanan)->update($dataUpdate);
+                if ($update) {
+                    $dataUpdate = $this->bulanan
+                        ->with_user()
+                        ->get($cekLaporan->id_laporanbulanan);
+                    return $this->response(array(
+                        "status"                => true,
+                        "response_code"         => REST_Controller::HTTP_OK,
+                        "response_message"      => "Laporan bulanan berhasil di edit",
+                        "data"                  => $dataUpdate
+                    ), REST_Controller::HTTP_OK);
+                } else {
+                    return $this->response(array(
+                        "status"                => true,
+                        "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
+                        "response_message"      => "Laporan bulanan gagal di edit!",
+                        "data"                  => null
+                    ), REST_Controller::HTTP_OK);
+                }
+            } else {
+                return $this->response(array(
+                    "status"                => true,
+                    "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
+                    "response_message"      => "Laporan bulanan tidak dapat di edit",
+                    "data"                  => null
+                ), REST_Controller::HTTP_OK);
+            }
+        } else {
+            return $this->response(array(
+                "status"                => true,
+                "response_code"         => REST_Controller::HTTP_EXPECTATION_FAILED,
+                "response_message"      => "Laporan bulanan tidak ditemukan",
+                "data"                  => null
+            ), REST_Controller::HTTP_OK);
+        }
+    }
 }
