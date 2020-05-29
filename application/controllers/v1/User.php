@@ -59,6 +59,7 @@ class User extends REST_Controller
         $nip_user               = set($data->nip_user);
         $nama_user              = set($data->nama_user);
         $foto_user              = set($data->foto_user);
+        $password_user          = set($data->password_user);
 
         if (!empty($foto_user)) {            
             $image  = base64_decode($foto_user);
@@ -80,17 +81,36 @@ class User extends REST_Controller
         $cekUser = $this->user->get($id_user);
         if ($cekUser) {
             if(!empty($foto_user)){
-                $dataUpdate = [
-                    "nip_user"          => $nip_user,
-                    "nama_user"         => $nama_user,
-                    "foto_user"         => $foto_user
-                ];
+                if(!empty($password_user)){
+                    $dataUpdate = [
+                        "nip_user"          => $nip_user,
+                        "nama_user"         => $nama_user,
+                        "foto_user"         => $foto_user,
+                        "password_user"     => md5($password_user)
+                    ];
+                } else {
+                    $dataUpdate = [
+                        "nip_user"          => $nip_user,
+                        "nama_user"         => $nama_user,
+                        "foto_user"         => $foto_user
+                    ];
+                }
+               
             } else {
-                $dataUpdate = [
-                    "nip_user"          => $nip_user,
-                    "nama_user"         => $nama_user
-                ];
-            }
+                if(!empty($password_user)){
+                    $dataUpdate = [
+                        "nip_user"          => $nip_user,
+                        "nama_user"         => $nama_user,
+                        "password_user"     => md5($password_user)
+                    ];
+                } else {
+                    $dataUpdate = [
+                        "nip_user"          => $nip_user,
+                        "nama_user"         => $nama_user
+                    ];
+                }
+                
+            }          
             
             $update = $this->user->where(["id_user" => $id_user])->update($dataUpdate);
             if ($update) {
